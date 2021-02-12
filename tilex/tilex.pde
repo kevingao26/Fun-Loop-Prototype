@@ -1,5 +1,6 @@
 import java.util.*;
 import java.util.Set;
+import processing.sound.*; 
 
 //Dimension
 int dimension = 6;
@@ -19,10 +20,14 @@ int pressCount = 0;
 PImage img[] = new PImage[stateCount]; 
 Tile t[] = new Tile[tileCount]; 
 
+SoundFile clickingSound; 
+SoundFile dingSound; 
+
 void setup() {
   Freight = loadFont("FreightDispProBlack-Regular-60.vlw"); 
-  //println(randoms);
-  //println ("possible permutations: = "+permutations); 
+  clickingSound = new SoundFile(this, "click.mp3"); 
+  dingSound = new SoundFile(this, "ding.mp3"); 
+  
   size(1024, 1024);
   tileSize = width/dimension;
   for (int i = 0; i <stateCount; i++) {
@@ -51,11 +56,10 @@ void mousePressed() {
     int tileNumber = (yIn*dimension)+xIn; 
     if (t[tileNumber].tilestate != 0) {
       pressCount++;
+      dingSound.play();
       t[tileNumber].tilestate = 0;
     }
     println(pressCount, round);
-    
-   
   }
 }
 
@@ -74,7 +78,6 @@ void gameState () {
     textFont(Freight); 
     textAlign(CENTER);
     fill(0); 
-    //text ("Select the secret tile to win!", width/2, height/2+20); 
     break; 
   case 1:
     //play state
@@ -85,8 +88,6 @@ void gameState () {
     textFont(Freight); 
     textAlign(CENTER);
     fill(255, 128, 0); 
-    //text ("PTS: "+pressCount, width/2, height/2+20);
-    //text ("Press Zero to play again", width/2, height/2+178);
     reset();
     break;
   }
@@ -98,14 +99,10 @@ void reset() {
       round = 0;
       // TODO: Insert sound effect
     }
-  
     gamestate = 0;
-    
     pressCount = 0; 
     round += 1;
-    
     randoms = new Random().ints(0, tileCount).distinct().limit(round).toArray();
-    
     for (int j = 0; j <tileCount; j++) {
       boolean in_random = false;
       for (int k = 0; k < round; k++) {
@@ -113,15 +110,11 @@ void reset() {
             in_random = true;
           }
       }
-      //reset the game
       if (in_random == false) {
         t[j].tilestate = 0;
       } else {
         t[j].tilestate = (new Random().ints(1, 5).distinct().limit(1).toArray())[0];
       }
-      
     }
-    
-    
 }
 //rules
